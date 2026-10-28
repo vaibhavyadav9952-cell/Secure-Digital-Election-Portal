@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blockchain Audit | Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🔐 Blockchain Audit (Admin Only)</h2>
+        <a href="/admin/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+
+    <!-- Chain Integrity Status -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">Chain Integrity Verification</div>
+        <div class="card-body">
+            {% if chain_valid %}
+                {% if chain_valid.is_valid %}
+                    <div class="alert alert-success mb-0">
+                        ✅ <strong>{{ chain_valid.message }}</strong>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mb-0">
+                        ❌ <strong>Tampering Detected!</strong><br>{{ chain_valid.message }}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Decrypt Ledger Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-danger text-white">🔓 Decrypt Ballot Ledger</div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <strong>⚠️ Authorised Audit Only.</strong>
+                Enter the <code>BALLOT_MASTER_KEY</code> from your <code>.env</code> file.
+                This key is used to derive the AES-256 decryption key in memory.
+                It is never stored in the database.
+            </div>
+
+            {% if error_message %}
+            <div class="alert alert-danger">❌ {{ error_message }}</div>
+            {% endif %}
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Master Key</label>
+                    <input type="password" name="master_key" class="form-control font-monospace"
+                           placeholder="Paste your BALLOT_MASTER_KEY here" required>
+                    <div class="form-text">This value is read from your .env file. Never share it.</div>
+                </div>
+                <button type="submit" class="btn btn-danger">🔓 Decrypt Ledger</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Decrypted Results -->
+    {% if audit_results is not none %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">✅ Decrypted Ballot Records ({{ audit_results|length }} votes)</div>
+        <div class="card-body p-0">
+            {% if audit_results %}
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Block #</th>
+                        <th>Candidate</th>
+                        <th>Timestamp (UTC)</th>
+                        <th>Ballot Ref</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in audit_results %}
+                    <tr>
+                        <td>{{ entry.block_index }}</td>
+                        <td><strong>{{ entry.candidate_name }}</strong></td>
+                        <td>{{ entry.timestamp_utc }}</td>
+                        <td><code>{{ entry.ballot_ref or "—" }}</code></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="p-3 text-muted">No vote blocks found (only genesis block exists).</div>
+            {% endif %}
+        </div>
+    </div>
+    <p class="text-muted mt-2 small">
+        Note: Voter identities are pseudonymised in the ledger — this table shows candidate choices only.
+        Voter-to-candidate linkage is in the admin votes table.
+    </p>
+    {% endif %}
+</div>
+</body>
+</html>

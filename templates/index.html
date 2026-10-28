@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Digital Election Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">&#128228; Election Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/results">Results</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blockchain">Blockchain</a></li>
+                <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/login">Admin</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<div style="background-color:#1a56db; color:#fff; padding: 50px 0; text-align:center;">
+    <div class="container">
+        <h1 style="font-size:32px; font-weight:bold;">Secure Digital Election Portal</h1>
+        <p style="font-size:16px; margin-top:10px; color:#cce0ff;">
+            AI Face Authentication &bull; Blockchain Verified &bull; Fraud Detection
+        </p>
+        <div style="margin-top:25px;">
+            <a href="/register" class="btn btn-light" style="margin-right:10px; font-weight:bold;">Register to Vote</a>
+            <a href="/login" class="btn btn-outline-light">Already Registered? Login</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="container" style="margin-top:30px;">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stat-box">
+                <div class="stat-number">{{ stats.total_users }}</div>
+                <div class="stat-label">Registered Voters</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box">
+                <div class="stat-number">{{ stats.total_votes }}</div>
+                <div class="stat-label">Votes Cast</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box">
+                <div class="stat-number" style="color:{% if stats.election_open %}#16a34a{% else %}#dc2626{% endif %};">
+                    {% if stats.election_open %}OPEN{% else %}CLOSED{% endif %}
+                </div>
+                <div class="stat-label">Election Status</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container" style="margin-top:20px; margin-bottom:40px;">
+    <h4 style="margin-bottom:15px; color:#333;">How It Works</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card" style="text-align:center;">
+                <div style="font-size:30px; margin-bottom:8px;">&#128100;</div>
+                <div class="card-title">1. Register</div>
+                <p style="font-size:13px; color:#666;">Create an account and capture your face for biometric ID.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card" style="text-align:center;">
+                <div style="font-size:30px; margin-bottom:8px;">&#128247;</div>
+                <div class="card-title">2. Face Login</div>
+                <p style="font-size:13px; color:#666;">Login using email/password and live face verification.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card" style="text-align:center;">
+                <div style="font-size:30px; margin-bottom:8px;">&#128228;</div>
+                <div class="card-title">3. Vote Once</div>
+                <p style="font-size:13px; color:#666;">Cast your vote securely. Each voter can vote only once.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card" style="text-align:center;">
+                <div style="font-size:30px; margin-bottom:8px;">&#128274;</div>
+                <div class="card-title">4. Blockchain</div>
+                <p style="font-size:13px; color:#666;">Your vote is stored in a tamper-proof blockchain.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Features List -->
+    <div class="card" style="margin-top:10px;">
+        <div class="card-title">Security Features</div>
+        <ul style="font-size:14px; color:#555;">
+            <li>&#128274; bcrypt password hashing - passwords are never stored in plain text</li>
+            <li>&#128247; OpenCV + face_recognition library - AI-powered face matching</li>
+            <li>&#128064; Liveness detection - prevents photo spoofing attacks</li>
+            <li>&#128200; Rule-based fraud detection with risk scoring (0-100)</li>
+            <li>&#9941; Custom SHA-256 blockchain - every vote is immutably recorded</li>
+            <li>&#128683; One vote per user - enforced at both database and session level</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>Secure Digital Election Portal &bull; B.Tech Computer Science FEP Project &bull; 2024</p>
+    <p style="font-size:11px; margin-top:4px;">Built with Flask, OpenCV, MySQL, face_recognition</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

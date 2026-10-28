@@ -1,0 +1,30 @@
+{
+  "name": "secure-digital-election-portal-backend",
+  "version": "1.0.0",
+  "description": "Secure Digital Election Portal with Aadhaar Verification, OTP, Custom Blockchain, and AI Fraud Detection",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "ai-detect": "python ai_engine/fraud_detector.py"
+  },
+  "keywords": [
+    "election",
+    "blockchain",
+    "aadhaar",
+    "otp",
+    "ai-fraud-detection",
+    "security"
+  ],
+  "author": "Election Portal Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1"
+  }
+}

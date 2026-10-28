@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Digital Election Portal | Aadhaar, OTP, Blockchain & AI</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Chart.js for Member 4 Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-check-to-slot"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">E-VOTE INDIA</span>
+          <span class="brand-subtitle">Secure Blockchain & AI Election Portal</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-menu">
+        <button class="nav-tab active" data-tab="tab-home">
+          <i class="fa-solid fa-landmark"></i> Portal Overview
+        </button>
+        <button class="nav-tab" data-tab="tab-vote">
+          <i class="fa-solid fa-person-booth"></i> Voting Booth
+        </button>
+        <button class="nav-tab" data-tab="tab-blockchain">
+          <i class="fa-solid fa-cube"></i> Blockchain Explorer
+          <span class="badge-pill secure" id="nav-chain-status">Secure</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-analytics">
+          <i class="fa-solid fa-chart-pie"></i> AI & Analytics
+        </button>
+        <button class="nav-tab admin-tab" data-tab="tab-admin" id="nav-admin-btn" style="display: none;">
+          <i class="fa-solid fa-shield-halved"></i> Admin Control
+        </button>
+      </nav>
+
+      <!-- Auth Action Header Area -->
+      <div class="nav-actions">
+        <button class="btn-demo" onclick="app.showAadhaarDirectoryModal()">
+          <i class="fa-solid fa-address-card"></i> Aadhaar Directory
+        </button>
+        <div id="nav-user-profile" class="user-profile-badge" style="display: none;">
+          <div class="user-avatar" id="nav-avatar">V</div>
+          <div class="user-info">
+            <span class="user-name" id="nav-user-name">Voter Name</span>
+            <span class="user-role-tag" id="nav-user-role">VOTER</span>
+          </div>
+          <button class="btn-icon" onclick="auth.logout()" title="Logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+        <div id="nav-auth-buttons">
+          <button class="btn btn-secondary" onclick="auth.showLoginModal()">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+          </button>
+          <button class="btn btn-primary" onclick="auth.showRegisterModal()">
+            <i class="fa-solid fa-user-plus"></i> Register
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live System Status Ribbon -->
+  <div class="system-status-ribbon">
+    <div class="status-item">
+      <span class="pulse-dot active"></span>
+      <span>Election Status: <strong id="ribbon-election-status">ACTIVE</strong></span>
+    </div>
+    <div class="status-item">
+      <i class="fa-solid fa-link"></i>
+      <span>Blockchain Ledger: <strong id="ribbon-blocks-count">1</strong> Blocks</span>
+    </div>
+    <div class="status-item">
+      <i class="fa-solid fa-users"></i>
+      <span>Turnout: <strong id="ribbon-turnout-pct">0%</strong></span>
+    </div>
+    <div class="status-item">
+      <i class="fa-solid fa-brain"></i>
+      <span>AI Risk Index: <strong id="ribbon-risk-score" class="text-success">LOW (5.0%)</strong></span>
+    </div>
+  </div>
+
+  <!-- Main Application Container -->
+  <main class="main-container">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: PORTAL OVERVIEW / HOME                            -->
+    <!-- ======================================================== -->
+    <section id="tab-home" class="tab-pane active">
+      <!-- Hero Banner -->
+      <div class="hero-section">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="fa-solid fa-shield-virus"></i> Final Year Capstone Project
+          </div>
+          <h1>Secure Digital Election Portal</h1>
+          <p class="hero-desc">
+            A next-generation decentralized electronic voting architecture incorporating <strong>UIDAI Aadhaar Verification Simulation</strong>, 
+            <strong>Time-based 2-Factor OTP</strong>, <strong>Custom SHA-256 Proof-of-Work Blockchain Ledger</strong>, and <strong>AI Real-time Anomaly Detection</strong>.
+          </p>
+          <div class="hero-cta-group">
+            <button class="btn btn-primary btn-lg" onclick="app.navigateTo('tab-vote')">
+              <i class="fa-solid fa-person-booth"></i> Enter Voting Booth
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="app.navigateTo('tab-blockchain')">
+              <i class="fa-solid fa-cubes"></i> Explore Blockchain Ledger
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="app.showDemoQuickLoginModal()">
+              <i class="fa-solid fa-bolt"></i> 1-Click Demo Login
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Metrics Cards -->
+        <div class="hero-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon icon-blue"><i class="fa-solid fa-id-card"></i></div>
+            <div class="metric-value" id="home-registered-count">0</div>
+            <div class="metric-label">Registered Citizens</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon icon-green"><i class="fa-solid fa-check-double"></i></div>
+            <div class="metric-value" id="home-votes-cast-count">0</div>
+            <div class="metric-label">Ballots Cast</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon icon-purple"><i class="fa-solid fa-cube"></i></div>
+            <div class="metric-value" id="home-blocks-count">0</div>
+            <div class="metric-label">Mined Blocks</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon icon-amber"><i class="fa-solid fa-brain"></i></div>
+            <div class="metric-value" id="home-ai-health">100%</div>
+            <div class="metric-label">Ledger Integrity</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4-Member Subsystem Architecture Grid -->
+      <div class="section-header">
+        <h2>Subsystem Architecture & Team Modular Breakdown</h2>
+        <p>Each module represents an independent yet seamlessly integrated engineering domain.</p>
+      </div>
+
+      <div class="modules-grid">
+        <!-- Member 1 Card -->
+        <div class="module-card">
+          <div class="module-header">
+            <div class="module-number">MEMBER 1</div>
+            <span class="module-tag tag-auth">Authentication</span>
+          </div>
+          <h3>User Management & Aadhaar</h3>
+          <p class="module-desc">Simulates national UIDAI database identity checks, age eligibility enforcement, and 2-factor OTP gateway.</p>
+          <ul class="module-features">
+            <li><i class="fa-solid fa-check"></i> Simulated 12-digit Aadhaar DB verification</li>
+            <li><i class="fa-solid fa-check"></i> 6-digit Time-Based OTP with SMS preview</li>
+            <li><i class="fa-solid fa-check"></i> Bcrypt password encryption & JWT tokens</li>
+            <li><i class="fa-solid fa-check"></i> Digital Voter ID generation</li>
+          </ul>
+          <button class="btn btn-sm btn-outline" onclick="auth.showRegisterModal()">
+            <i class="fa-solid fa-user-plus"></i> Test Registration Flow
+          </button>
+        </div>
+
+        <!-- Member 2 Card -->
+        <div class="module-card">
+          <div class="module-header">
+            <div class="module-number">MEMBER 2</div>
+            <span class="module-tag tag-voting">Voting Portal</span>
+          </div>
+          <h3>Election & Candidate Management</h3>
+          <p class="module-desc">Interactive voting booth with anti-double voting enforcement, secret ballot guarantees, and Admin election dashboard.</p>
+          <ul class="module-features">
+            <li><i class="fa-solid fa-check"></i> Candidate Ballot with manifesto & symbols</li>
+            <li><i class="fa-solid fa-check"></i> Strict one-vote-per-voter atomic locking</li>
+            <li><i class="fa-solid fa-check"></i> Admin Candidate CRUD & status controls</li>
+            <li><i class="fa-solid fa-check"></i> Real-time tally & winner proclamation</li>
+          </ul>
+          <button class="btn btn-sm btn-outline" onclick="app.navigateTo('tab-vote')">
+            <i class="fa-solid fa-person-booth"></i> Open Voting Booth
+          </button>
+        </div>
+
+        <!-- Member 3 Card -->
+        <div class="module-card">
+          <div class="module-header">
+            <div class="module-number">MEMBER 3</div>
+            <span class="module-tag tag-chain">Blockchain</span>
+          </div>
+          <h3>Cryptographic SHA-256 Ledger</h3>
+          <p class="module-desc">Custom Proof-of-Work blockchain recording anonymous vote transactions with Merkle root hashing and tamper detection.</p>
+          <ul class="module-features">
+            <li><i class="fa-solid fa-check"></i> SHA-256 Chained blocks & Merkle trees</li>
+            <li><i class="fa-solid fa-check"></i> Proof-of-Work mining consensus</li>
+            <li><i class="fa-solid fa-check"></i> Interactive Tamper Simulator & Repair tool</li>
+            <li><i class="fa-solid fa-check"></i> Anonymous voter cryptographic receipt proof</li>
+          </ul>
+          <button class="btn btn-sm btn-outline" onclick="app.navigateTo('tab-blockchain')">
+            <i class="fa-solid fa-cube"></i> Inspect Blockchain
+          </button>
+        </div>
+
+        <!-- Member 4 Card -->
+        <div class="module-card">
+          <div class="module-header">
+            <div class="module-number">MEMBER 4</div>
+            <span class="module-tag tag-ai">AI & Analytics</span>
+          </div>
+          <h3>Smart Fraud Detection & Reports</h3>
+          <p class="module-desc">Statistical & Machine Learning anomaly detection engine analyzing voting velocity, IP clusters, and live Chart.js reports.</p>
+          <ul class="module-features">
+            <li><i class="fa-solid fa-check"></i> Real-time anomaly & burst velocity scoring</li>
+            <li><i class="fa-solid fa-check"></i> Standalone Python Scikit-Learn ML script</li>
+            <li><i class="fa-solid fa-check"></i> Live Chart.js demographic & turnout charts</li>
+            <li><i class="fa-solid fa-check"></i> Certified Printable Election Report</li>
+          </ul>
+          <button class="btn btn-sm btn-outline" onclick="app.navigateTo('tab-analytics')">
+            <i class="fa-solid fa-chart-line"></i> View AI Analytics
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: VOTING BOOTH (MEMBER 2)                           -->
+    <!-- ======================================================== -->
+    <section id="tab-vote" class="tab-pane">
+      <div class="portal-header">
+        <div>
+          <h2>Official Electronic Voting Booth</h2>
+          <p>Cast your confidential vote securely. Every ballot is cryptographically sealed onto the SHA-256 blockchain.</p>
+        </div>
+        <div class="ballot-election-badge" id="voting-election-title">
+          National General Election 2026
+        </div>
+      </div>
+
+      <!-- Voter Status Alert Banner -->
+      <div id="voter-status-banner" class="alert-box alert-info">
+        <i class="fa-solid fa-circle-info"></i>
+        <span id="voter-status-msg">Please log in with your Voter ID or registered Aadhaar to cast your ballot.</span>
+      </div>
+
+      <!-- Ballot Container -->
+      <div class="ballot-layout">
+        <!-- Left: Candidate Cards -->
+        <div class="ballot-main">
+          <div class="ballot-title-row">
+            <h3>Select Your Candidate</h3>
+            <span class="text-muted">Constituency: <strong>National General</strong></span>
+          </div>
+
+          <div class="candidates-grid" id="candidates-ballot-list">
+            <!-- Candidate cards injected by JS -->
+            <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading ballot candidates...</div>
+          </div>
+
+          <!-- Optional Biometric / Camera Simulator Section -->
+          <div class="face-verify-card" id="face-verify-section">
+            <div class="face-header">
+              <div>
+                <h4><i class="fa-solid fa-camera"></i> Multi-Factor Biometric Liveness Verification</h4>
+                <p>Optional automated snapshot verification before ballot encryption</p>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="voting.toggleCamera()">
+                <i class="fa-solid fa-video"></i> <span id="camera-btn-text">Start Camera Simulator</span>
+              </button>
+            </div>
+            <div class="camera-stream-box" id="camera-box" style="display: none;">
+              <div class="camera-feed-placeholder" id="camera-feed">
+                <div class="camera-crosshair"></div>
+                <div class="camera-status-tag"><i class="fa-solid fa-face-smile"></i> Face Detected: Liveness 99.4% (Live Match)</div>
+              </div>
+              <p class="text-xs text-muted mt-2"><i class="fa-solid fa-shield-check"></i> Biometric hash verified against local session authentication.</p>
+            </div>
+          </div>
+
+          <!-- Vote Submission Controls -->
+          <div class="vote-action-bar">
+            <div class="selected-summary" id="selected-candidate-preview">
+              No candidate selected
+            </div>
+            <button class="btn btn-primary btn-lg" id="btn-cast-vote" onclick="voting.submitVote()" disabled>
+              <i class="fa-solid fa-lock"></i> Seal & Cast Vote on Blockchain
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Voter Information & Receipt Card -->
+        <div class="ballot-sidebar">
+          <div class="sidebar-card voter-card">
+            <h4><i class="fa-solid fa-id-card"></i> Voter Credentials</h4>
+            <div class="voter-details-table" id="sidebar-voter-info">
+              <p class="text-muted">Not logged in. Use "1-Click Demo Login" or register.</p>
+            </div>
+          </div>
+
+          <div class="sidebar-card receipt-card" id="sidebar-receipt-box" style="display: none;">
+            <div class="receipt-header">
+              <i class="fa-solid fa-certificate"></i>
+              <h4>Cryptographic Ballot Receipt</h4>
+            </div>
+            <p class="text-xs text-muted">Your vote is sealed into the blockchain ledger. Keep this receipt token to verify your vote anytime.</p>
+            
+            <div class="receipt-field">
+              <label>Receipt Token (Hash)</label>
+              <div class="hash-display" id="receipt-token-text">...</div>
+            </div>
+            <div class="receipt-field">
+              <label>Block Height</label>
+              <div id="receipt-block-index">#...</div>
+            </div>
+            <div class="receipt-field">
+              <label>Block SHA-256 Hash</label>
+              <div class="hash-display" id="receipt-block-hash">...</div>
+            </div>
+
+            <button class="btn btn-secondary btn-sm w-100 mt-3" onclick="voting.verifyCurrentReceipt()">
+              <i class="fa-solid fa-check-to-slot"></i> Verify Receipt on Blockchain
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: BLOCKCHAIN EXPLORER & SECURITY (MEMBER 3)         -->
+    <!-- ======================================================== -->
+    <section id="tab-blockchain" class="tab-pane">
+      <div class="portal-header">
+        <div>
+          <h2>SHA-256 Proof-of-Work Blockchain Explorer</h2>
+          <p>Decentralized, immutable ledger storing encrypted votes. Inspect blocks, Merkle roots, and cryptographic hashes.</p>
+        </div>
+        <div class="chain-action-buttons">
+          <button class="btn btn-secondary" onclick="blockchainView.fetchChain()">
+            <i class="fa-solid fa-arrows-rotate"></i> Refresh Ledger
+          </button>
+          <button class="btn btn-danger" onclick="blockchainView.showTamperModal()">
+            <i class="fa-solid fa-bug"></i> Tamper Simulation Tool
+          </button>
+          <button class="btn btn-success" onclick="blockchainView.repairChain()">
+            <i class="fa-solid fa-wrench"></i> Repair / Re-Mine Chain
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Integrity Status Alert -->
+      <div id="chain-integrity-banner" class="alert-box alert-success">
+        <i class="fa-solid fa-shield-check"></i>
+        <div class="integrity-msg-box">
+          <strong id="chain-integrity-title">BLOCKCHAIN INTEGRITY: 100% SECURE & VERIFIED</strong>
+          <span id="chain-integrity-desc">All SHA-256 block hashes, previous hash pointers, and Merkle tree roots match cryptographic signatures.</span>
+        </div>
+      </div>
+
+      <!-- Blockchain Blocks Visualizer -->
+      <div class="blockchain-visualizer-container">
+        <h3><i class="fa-solid fa-cubes"></i> Live Block Chain Sequence</h3>
+        <div class="blocks-scroll-wrapper" id="blockchain-blocks-flow">
+          <!-- Mined block cards rendered here -->
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading blockchain ledger...</div>
+        </div>
+      </div>
+
+      <!-- Two Column Tools: Receipt Verifier & Audit Logs -->
+      <div class="grid-2-col mt-4">
+        <!-- Left Tool: Voter Cryptographic Receipt Verifier -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-magnifying-glass"></i> Voter Receipt Inclusion Verifier</h3>
+          </div>
+          <div class="card-body">
+            <p class="text-sm text-muted mb-3">
+              Enter your cryptographic receipt token to prove your vote has been permanently mined into the blockchain without exposing your candidate choice (Secret Ballot Principle).
+            </p>
+            <div class="input-group">
+              <input type="text" id="verify-receipt-input" class="form-control font-mono" placeholder="Paste 64-character SHA-256 Receipt Hash" />
+              <button class="btn btn-primary" onclick="blockchainView.verifyReceiptInput()">
+                <i class="fa-solid fa-check"></i> Verify
+              </button>
+            </div>
+            <div id="receipt-verification-result" class="mt-3" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Right Tool: Security Audit Logs -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Immutable Security Audit Trail</h3>
+          </div>
+          <div class="card-body">
+            <div class="audit-logs-table-container">
+              <table class="table" id="audit-logs-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Event</th>
+                    <th>Actor</th>
+                    <th>Severity</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-logs-tbody">
+                  <tr><td colspan="4" class="text-center">Loading audit logs...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: AI & ANALYTICS DASHBOARD (MEMBER 4)               -->
+    <!-- ======================================================== -->
+    <section id="tab-analytics" class="tab-pane">
+      <div class="portal-header">
+        <div>
+          <h2>AI Fraud Detection & Live Election Analytics</h2>
+          <p>Machine Learning anomaly detection algorithms, statistical voting velocity metrics, and interactive visualizations.</p>
+        </div>
+        <div class="analytics-action-buttons">
+          <button class="btn btn-primary" onclick="analyticsView.runPythonML()">
+            <i class="fa-solid fa-brain"></i> Run Python ML Anomaly Engine
+          </button>
+          <button class="btn btn-secondary" onclick="analyticsView.openOfficialReportModal()">
+            <i class="fa-solid fa-file-contract"></i> Official Certified Report
+          </button>
+        </div>
+      </div>
+
+      <!-- AI Anomaly Risk Index Scorecard -->
+      <div class="ai-risk-scorecard">
+        <div class="risk-gauge-container">
+          <div class="risk-gauge-circle" id="ai-risk-circle">
+            <span class="risk-score-value" id="ai-risk-number">5.0%</span>
+            <span class="risk-score-sub">RISK SCORE</span>
+          </div>
+        </div>
+        <div class="risk-details">
+          <div class="risk-title-row">
+            <h3>AI Multi-Factor Threat Assessment</h3>
+            <span class="badge-pill secure" id="ai-risk-badge">STATUS: NORMAL</span>
+          </div>
+          <p id="ai-risk-summary-text">
+            Statistical anomaly filters are monitoring voting velocity, IP cluster density, and cryptographic signature consistency. All current signals are within safe baseline bounds.
+          </p>
+          <div class="risk-stats-row">
+            <div class="risk-stat-item">
+              <span class="stat-lbl">Voting Velocity:</span>
+              <strong id="ai-velocity-stat">Normal (&lt; 5 / min)</strong>
+            </div>
+            <div class="risk-stat-item">
+              <span class="stat-lbl">Double Vote Blocks:</span>
+              <strong id="ai-duplicate-stat">0 Detected</strong>
+            </div>
+            <div class="risk-stat-item">
+              <span class="stat-lbl">Tamper Alerts:</span>
+              <strong id="ai-tamper-stat">0 Caught</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Charts Grid (Chart.js) -->
+      <div class="charts-grid mt-4">
+        <!-- Chart 1: Candidate Vote Share -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h4><i class="fa-solid fa-chart-pie"></i> Real-Time Candidate Vote Share</h4>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-candidate-share" height="240"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Hourly Turnout & Velocity -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h4><i class="fa-solid fa-chart-line"></i> Turnout Velocity Timeline (Hourly)</h4>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-hourly-velocity" height="240"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Demographic Age Breakdown -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h4><i class="fa-solid fa-users"></i> Registered Demographics by Age</h4>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-age-demographics" height="240"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 4: Gender Distribution -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h4><i class="fa-solid fa-venus-mars"></i> Voter Gender Distribution</h4>
+          </div>
+          <div class="chart-body">
+            <canvas id="chart-gender-demographics" height="240"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Flagged Anomalies Log -->
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-triangle-exclamation"></i> Real-Time AI Anomaly Detection Feed</h3>
+        </div>
+        <div class="card-body">
+          <div id="ai-anomalies-list" class="anomalies-feed-box">
+            <!-- Anomaly items injected by JS -->
+            <p class="text-muted text-center">No security anomalies detected.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: ADMIN CONTROL DASHBOARD (MEMBER 2)                -->
+    <!-- ======================================================== -->
+    <section id="tab-admin" class="tab-pane">
+      <div class="portal-header">
+        <div>
+          <h2>Election Commission Administration Console</h2>
+          <p>Manage candidate rosters, start/stop polling operations, monitor live registry, and oversee system governance.</p>
+        </div>
+        <div class="admin-election-controls">
+          <button class="btn btn-success" onclick="admin.setElectionStatus('ACTIVE')">
+            <i class="fa-solid fa-play"></i> Start Election
+          </button>
+          <button class="btn btn-amber" onclick="admin.setElectionStatus('PAUSED')">
+            <i class="fa-solid fa-pause"></i> Pause Election
+          </button>
+          <button class="btn btn-danger" onclick="admin.setElectionStatus('CLOSED')">
+            <i class="fa-solid fa-stop"></i> Finalize & Close Election
+          </button>
+        </div>
+      </div>
+
+      <!-- Candidate Roster Management -->
+      <div class="card mt-4">
+        <div class="card-header flex-between">
+          <h3><i class="fa-solid fa-user-tie"></i> Candidate Management</h3>
+          <button class="btn btn-primary btn-sm" onclick="admin.showAddCandidateModal()">
+            <i class="fa-solid fa-plus"></i> Add New Candidate
+          </button>
+        </div>
+        <div class="card-body">
+          <table class="table" id="admin-candidates-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Candidate Name</th>
+                <th>Party Affiliation</th>
+                <th>Constituency</th>
+                <th>Votes Secured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-candidates-tbody">
+              <!-- Admin candidate rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Voter Registry Directory -->
+      <div class="card mt-4">
+        <div class="card-header flex-between">
+          <h3><i class="fa-solid fa-users-viewfinder"></i> Registered Voters Directory & Turnout Status</h3>
+          <button class="btn btn-secondary btn-sm" onclick="admin.fetchVoterDirectory()">
+            <i class="fa-solid fa-rotate"></i> Refresh Roster
+          </button>
+        </div>
+        <div class="card-body">
+          <table class="table" id="admin-voters-table">
+            <thead>
+              <tr>
+                <th>Voter ID</th>
+                <th>Citizen Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Voting Status</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="admin-voters-tbody">
+              <!-- Voter rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODALS SECTION                                           -->
+  <!-- ======================================================== -->
+
+  <!-- Modal 1: Aadhaar Registration Wizard (Member 1) -->
+  <div class="modal-overlay" id="modal-register">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="wizard-steps-indicator">
+          <div class="step-badge active" id="step-badge-1">1. Aadhaar Check</div>
+          <div class="step-connector"></div>
+          <div class="step-badge" id="step-badge-2">2. OTP Verification</div>
+          <div class="step-connector"></div>
+          <div class="step-badge" id="step-badge-3">3. Voter ID Card</div>
+        </div>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-register')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Step 1: Aadhaar Input -->
+        <div id="reg-step-1" class="wizard-step">
+          <h4>Step 1: UIDAI Aadhaar Identity Verification</h4>
+          <p class="text-sm text-muted mb-3">Enter your 12-digit Aadhaar number to verify citizen records and age eligibility (18+).</p>
+          
+          <div class="form-group">
+            <label>12-Digit Aadhaar Number</label>
+            <div class="input-group">
+              <input type="text" id="reg-aadhaar-input" class="form-control font-mono" maxlength="12" placeholder="e.g. 112233445566" />
+              <button class="btn btn-secondary" onclick="app.showAadhaarDirectoryModal()">Select Demo Aadhaar</button>
+            </div>
+          </div>
+
+          <div id="aadhaar-verify-preview" class="citizen-preview-box" style="display: none;">
+            <!-- Verified citizen details -->
+          </div>
+
+          <button class="btn btn-primary w-100 mt-3" id="btn-verify-aadhaar" onclick="auth.handleAadhaarLookup()">
+            <i class="fa-solid fa-fingerprint"></i> Verify Aadhaar with UIDAI
+          </button>
+        </div>
+
+        <!-- Step 2: OTP Verification -->
+        <div id="reg-step-2" class="wizard-step" style="display: none;">
+          <h4>Step 2: 2-Factor OTP Verification</h4>
+          <p class="text-sm text-muted mb-3">A 6-digit security code has been sent to your registered mobile number.</p>
+
+          <!-- Simulated SMS Notification Box -->
+          <div class="sms-notification-sim" id="sms-sim-box">
+            <div class="sms-header">
+              <i class="fa-solid fa-message"></i> <strong>Simulated SMS Gateway (Govt of India)</strong>
+              <span class="badge-pill">Now</span>
+            </div>
+            <div class="sms-body" id="sms-sim-body">
+              "Your Secure Election Portal OTP is <strong>123456</strong>. Valid for 5 minutes. Do not share with anyone."
+            </div>
+          </div>
+
+          <div class="form-group mt-3">
+            <label>Enter 6-Digit OTP</label>
+            <input type="text" id="reg-otp-input" class="form-control font-mono otp-input" maxlength="6" placeholder="• • • • • •" />
+          </div>
+
+          <div class="flex-between mt-3">
+            <button class="btn btn-outline" onclick="auth.resendOtp()">Resend OTP</button>
+            <button class="btn btn-primary" onclick="auth.handleVerifyOtp()">
+              <i class="fa-solid fa-shield-check"></i> Verify & Proceed
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Password & Profile Creation -->
+        <div id="reg-step-3" class="wizard-step" style="display: none;">
+          <h4>Step 3: Set Password & Generate Digital Voter ID</h4>
+          <p class="text-sm text-muted mb-3">Create your secure password. It will be encrypted with bcrypt (10 rounds).</p>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="reg-email-input" class="form-control" placeholder="voter@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Create Password</label>
+            <input type="password" id="reg-pass-input" class="form-control" placeholder="Minimum 6 characters" />
+          </div>
+
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="reg-pass-confirm" class="form-control" placeholder="Re-enter password" />
+          </div>
+
+          <button class="btn btn-primary w-100 mt-3" onclick="auth.handleFinalRegistration()">
+            <i class="fa-solid fa-id-card-clip"></i> Complete Registration & Issue Voter ID
+          </button>
+        </div>
+
+        <!-- Step 4: Digital Voter Card Success -->
+        <div id="reg-step-success" class="wizard-step" style="display: none;">
+          <div class="text-center">
+            <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h3>Registration Complete!</h3>
+            <p class="text-muted">Your Digital National Voter ID Card has been minted.</p>
+          </div>
+
+          <!-- Digital Voter ID Card Graphic -->
+          <div class="voter-id-card-graphic" id="generated-voter-card">
+            <div class="card-top">
+              <i class="fa-solid fa-landmark"></i>
+              <span>ELECTION COMMISSION OF INDIA</span>
+              <i class="fa-solid fa-check-to-slot"></i>
+            </div>
+            <div class="card-mid">
+              <div class="card-photo">
+                <img id="card-photo-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Voter" />
+              </div>
+              <div class="card-info">
+                <div class="card-voter-id" id="card-voter-id">VOTER-IND-1001</div>
+                <div class="card-name" id="card-name">Aarav Sharma</div>
+                <div class="card-sub" id="card-aadhaar">Aadhaar: **** **** 5566</div>
+                <div class="card-sub" id="card-dob">DOB: 1995-05-14</div>
+              </div>
+            </div>
+            <div class="card-footer-strip">
+              <span>SECURE HASH VERIFIED</span>
+              <span>DIGITAL VOTER CREDENTIAL</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-100 mt-3" onclick="app.closeModal('modal-register'); app.navigateTo('tab-vote');">
+            <i class="fa-solid fa-person-booth"></i> Proceed to Voting Booth
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Login Modal -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-lock"></i> Portal Login</h3>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-login')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Voter ID, Aadhaar Number, or Email</label>
+          <input type="text" id="login-identifier" class="form-control font-mono" placeholder="e.g. 112233445566 or VOTER-IND-1001 or admin" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" />
+        </div>
+
+        <button class="btn btn-primary w-100 mt-2" onclick="auth.handleLogin()">
+          <i class="fa-solid fa-right-to-bracket"></i> Login
+        </button>
+
+        <div class="divider"><span>OR QUICK 1-CLICK DEMO</span></div>
+
+        <div class="quick-demo-buttons">
+          <button class="btn btn-sm btn-outline" onclick="auth.fillDemoLogin('voter')">
+            <i class="fa-solid fa-user"></i> Demo Voter (Aarav)
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="auth.fillDemoLogin('admin')">
+            <i class="fa-solid fa-shield-halved"></i> Demo Admin
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Mock Aadhaar Directory Explorer -->
+  <div class="modal-overlay" id="modal-aadhaar-directory">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-database"></i> Simulated UIDAI Aadhaar Citizen Directory</h3>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-aadhaar-directory')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-3">
+          Click on any citizen record to auto-fill the registration or login forms for immediate live demonstration:
+        </p>
+        <div class="aadhaar-cards-grid" id="aadhaar-directory-grid">
+          <!-- Aadhaar cards loaded dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Tamper Simulation Modal (Member 3) -->
+  <div class="modal-overlay" id="modal-tamper">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Blockchain Tamper Simulation Tool</h3>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-tamper')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-3">
+          This test tool allows examiners/evaluators to deliberately modify a vote transaction in a mined block.
+          Watch the cryptographic validation algorithm instantly detect the broken SHA-256 hash and Merkle root!
+        </p>
+
+        <div class="form-group">
+          <label>Target Block Index to Tamper</label>
+          <input type="number" id="tamper-block-index" class="form-control" min="1" value="1" />
+        </div>
+
+        <div class="form-group">
+          <label>Injected Malicious Candidate Name</label>
+          <input type="text" id="tamper-fake-candidate" class="form-control" value="HACKED_VOTE_CANDIDATE" />
+        </div>
+
+        <button class="btn btn-danger w-100 mt-3" onclick="blockchainView.executeTamper()">
+          <i class="fa-solid fa-virus"></i> Inject Tamper & Verify Detection
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Certified Election Report Modal (Member 4) -->
+  <div class="modal-overlay" id="modal-report">
+    <div class="modal-card modal-lg">
+      <div class="modal-header flex-between">
+        <h3><i class="fa-solid fa-certificate"></i> Certified Official Election Audit Document</h3>
+        <div>
+          <button class="btn btn-primary btn-sm" onclick="window.print()">
+            <i class="fa-solid fa-print"></i> Print / Save PDF
+          </button>
+          <button class="modal-close-btn" onclick="app.closeModal('modal-report')">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="official-report-document" id="printable-report-content">
+          <!-- Report content rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Add Candidate Modal (Admin) -->
+  <div class="modal-overlay" id="modal-add-candidate">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus"></i> Add Candidate</h3>
+        <button class="modal-close-btn" onclick="app.closeModal('modal-add-candidate')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Candidate Full Name</label>
+          <input type="text" id="add-cand-name" class="form-control" placeholder="e.g. Dr. Maya Sen" />
+        </div>
+        <div class="form-group">
+          <label>Party Affiliation</label>
+          <input type="text" id="add-cand-party" class="form-control" placeholder="e.g. National Green Party" />
+        </div>
+        <div class="form-group">
+          <label>Party Symbol (Emoji or Text)</label>
+          <input type="text" id="add-cand-symbol" class="form-control" placeholder="e.g. 🌟" />
+        </div>
+        <div class="form-group">
+          <label>Constituency</label>
+          <input type="text" id="add-cand-constituency" class="form-control" value="National General" />
+        </div>
+        <div class="form-group">
+          <label>Manifesto Summary</label>
+          <textarea id="add-cand-manifesto" class="form-control" rows="2" placeholder="Key goals and pledges..."></textarea>
+        </div>
+
+        <button class="btn btn-primary w-100 mt-3" onclick="admin.handleAddCandidate()">
+          <i class="fa-solid fa-check"></i> Register Candidate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/voting.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/blockchainView.js"></script>
+  <script src="js/analyticsView.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote Records | Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-dark px-3">
+    <span class="navbar-brand">🗳️ Election Portal — Admin</span>
+    <div>
+        <a href="/admin/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+        <a href="/admin/logout" class="btn btn-outline-danger btn-sm">Logout</a>
+    </div>
+</nav>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🗳️ Vote Records (Admin View)</h2>
+        <div>
+            <a href="/admin/audit" class="btn btn-warning btn-sm me-2">🔐 Audit Ledger</a>
+            <a href="/admin/dashboard" class="btn btn-secondary btn-sm">← Dashboard</a>
+        </div>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>⚠️ Restricted:</strong> This table links voters to their choices and is
+        visible only to authenticated admins.
+    </div>
+
+    {% if votes %}
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Voter Name</th>
+                        <th>Voter Email</th>
+                        <th>Candidate</th>
+                        <th>Party</th>
+                        <th>Timestamp</th>
+                        <th>Block Hash</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in votes %}
+                    <tr>
+                        <td>{{ v.id }}</td>
+                        <td>{{ v.voter_name }}</td>
+                        <td>{{ v.voter_email }}</td>
+                        <td><strong>{{ v.candidate_name }}</strong></td>
+                        <td>{{ v.party }}</td>
+                        <td>{{ v.timestamp }}</td>
+                        <td><code>{{ v.block_hash[:20] }}...</code></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="text-muted mt-2">Total: {{ votes|length }} vote(s)</p>
+    {% else %}
+    <div class="alert alert-info">No votes have been cast yet.</div>
+    {% endif %}
+</div>
+</body>
+</html>

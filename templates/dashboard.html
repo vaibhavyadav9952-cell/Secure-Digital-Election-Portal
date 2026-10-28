@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Election Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">&#128228; Election Portal</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/results">Results</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blockchain">Blockchain</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="margin-top:30px; margin-bottom:40px;">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Welcome card -->
+    <div class="card" style="border-left:5px solid #1a56db;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+                <h4 style="margin:0; color:#1a56db;">Welcome, {{ user.name }}!</h4>
+                <p style="margin:4px 0 0; color:#666; font-size:14px;">{{ user.email }}</p>
+            </div>
+            <div>
+                {% if user.has_voted %}
+                    <span class="badge bg-success" style="font-size:14px; padding:8px 12px;">&#10003; Voted</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark" style="font-size:14px; padding:8px 12px;">&#9888; Not Yet Voted</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Voting section -->
+    <div class="row">
+        <div class="col-md-8">
+            {% if not user.has_voted %}
+            <!-- Cast vote prompt -->
+            <div class="card">
+                <div class="card-title">&#128228; Cast Your Vote</div>
+                <p style="color:#555; font-size:14px;">
+                    The election is open! Click below to view the candidates and cast your vote.
+                    Remember: you can only vote once.
+                </p>
+                <a href="/vote" class="btn btn-primary">Go to Voting Page &rarr;</a>
+            </div>
+            {% else %}
+            <!-- Already voted message -->
+            <div class="card" style="border-left:5px solid #16a34a;">
+                <div class="card-title" style="color:#16a34a;">&#10003; Vote Successfully Cast</div>
+                <p style="color:#555; font-size:14px;">
+                    You have already cast your vote. Your vote has been recorded on the blockchain.
+                    You can check the blockchain to verify your vote.
+                </p>
+                <a href="/blockchain" class="btn btn-outline-primary">View Blockchain</a>
+                <a href="/results" class="btn btn-outline-secondary ms-2">View Results</a>
+            </div>
+            {% endif %}
+
+            <!-- Quick links -->
+            <div class="card">
+                <div class="card-title">Quick Links</div>
+                <div class="row">
+                    <div class="col-6" style="margin-bottom:10px;">
+                        <a href="/results" class="btn btn-outline-primary" style="width:100%;">&#128200; Election Results</a>
+                    </div>
+                    <div class="col-6" style="margin-bottom:10px;">
+                        <a href="/blockchain" class="btn btn-outline-secondary" style="width:100%;">&#128274; Blockchain</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- User info card -->
+            <div class="card">
+                <div class="card-title">Your Account</div>
+                <table style="font-size:14px; width:100%;">
+                    <tr>
+                        <td style="color:#666; padding:4px 0;">Name:</td>
+                        <td><strong>{{ user.name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="color:#666; padding:4px 0;">Email:</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:#666; padding:4px 0;">Vote Status:</td>
+                        <td>
+                            {% if user.has_voted %}
+                            <span style="color:#16a34a; font-weight:bold;">Voted</span>
+                            {% else %}
+                            <span style="color:#d97706; font-weight:bold;">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color:#666; padding:4px 0;">Face Auth:</td>
+                        <td>
+                            {% if user.face_path %}
+                            <span style="color:#16a34a;">&#10003; Registered</span>
+                            {% else %}
+                            <span style="color:#dc2626;">Not Set</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                <hr>
+                <a href="/logout" class="btn btn-danger btn-sm" style="width:100%;">Logout</a>
+            </div>
+
+            <!-- How voting works -->
+            <div class="card">
+                <div class="card-title" style="font-size:15px;">&#128274; Security Info</div>
+                <ul style="font-size:13px; color:#555; padding-left:15px;">
+                    <li>Password secured with bcrypt</li>
+                    <li>Face verified with AI</li>
+                    <li>Vote stored in blockchain</li>
+                    <li>One vote per voter only</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>Secure Digital Election Portal &bull; B.Tech Computer Science FEP Project</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

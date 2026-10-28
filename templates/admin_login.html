@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Election Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body style="background:#1e293b;">
+
+<div class="auth-wrapper" style="background:#1e293b;">
+    <div class="auth-card" style="max-width:380px;">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            <div style="font-size:36px; color:#1a56db;">&#128272;</div>
+            <h2>Admin Login</h2>
+            <p>Election Portal Administration</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Admin login form -->
+        <form method="POST" action="/admin/login">
+            <div class="mb-3">
+                <label for="username">Admin Username</label>
+                <input type="text" class="form-control" id="username" name="username"
+                       placeholder="Enter admin username" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                       placeholder="Enter admin password" required>
+            </div>
+
+            <button type="submit" class="auth-btn">Login to Admin Panel</button>
+        </form>
+
+        <div class="auth-footer-link" style="margin-top:15px;">
+            <a href="/" style="color:#1a56db;">&#8592; Back to Portal</a>
+        </div>
+
+        <!-- Default credentials hint (for development) -->
+        <div style="margin-top:15px; padding:10px; background:#f8f9fa; border-radius:4px; font-size:12px; color:#888; text-align:center;">
+            Default: username = <strong>admin</strong> &bull; password = <strong>admin123</strong>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

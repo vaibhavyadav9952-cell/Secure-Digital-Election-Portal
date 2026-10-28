@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Successful - Election Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">&#128228; Election Portal</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container" style="margin-top:40px; margin-bottom:40px; max-width:600px;">
+
+    <!-- Success box -->
+    <div class="card" style="text-align:center; border:2px solid #16a34a;">
+        <div style="font-size:60px; margin-bottom:10px;">&#10003;</div>
+        <h3 style="color:#16a34a; font-weight:bold;">Vote Cast Successfully!</h3>
+        <p style="color:#555; font-size:15px; margin-top:8px;">
+            Your vote has been recorded and secured on the blockchain.
+        </p>
+    </div>
+
+    <!-- Vote details -->
+    <div class="card">
+        <div class="card-title">Vote Details</div>
+        <table style="font-size:14px; width:100%;">
+            <tr>
+                <td style="color:#666; padding:6px 0; width:130px;">Voter Name:</td>
+                <td><strong>{{ user.name }}</strong></td>
+            </tr>
+            <tr>
+                <td style="color:#666; padding:6px 0;">Voted For:</td>
+                <td><strong>{{ candidate.name }}</strong> &mdash; {{ candidate.party }}</td>
+            </tr>
+            <tr>
+                <td style="color:#666; padding:6px 0; vertical-align:top;">Block Hash:</td>
+                <td>
+                    <code style="font-size:11px; word-break:break-all; color:#1a56db;">{{ block_hash }}</code>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Blockchain explanation -->
+    <div class="card" style="background:#f0f8ff; border-color:#bee3f8;">
+        <div class="card-title" style="font-size:15px;">&#128274; What Happened?</div>
+        <ol style="font-size:13px; color:#555;">
+            <li>Your vote was encrypted using SHA-256 hashing</li>
+            <li>A new block was added to the blockchain chain</li>
+            <li>The block is linked to all previous votes</li>
+            <li>Your vote cannot be changed or deleted</li>
+        </ol>
+    </div>
+
+    <!-- Action buttons -->
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="/blockchain" class="btn btn-outline-primary">View Blockchain</a>
+        <a href="/results" class="btn btn-outline-secondary">See Election Results</a>
+        <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>Secure Digital Election Portal &bull; B.Tech Computer Science FEP Project</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

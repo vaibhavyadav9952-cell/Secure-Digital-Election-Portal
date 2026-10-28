@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Verification - Election Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">&#128228; Election Portal</a>
+    </div>
+</nav>
+
+<div class="auth-wrapper">
+    <div class="auth-card" style="max-width:500px;">
+
+        {% if mode == 'register' %}
+        <div class="auth-logo">
+            <div class="logo-icon">&#128247;</div>
+            <h2>Face Registration</h2>
+            <p>Hi {{ user_name }}! Please capture your face photo for future verification.</p>
+        </div>
+        {% else %}
+        <div class="auth-logo">
+            <div class="logo-icon">&#128064;</div>
+            <h2>Face Verification</h2>
+            <p>Step 2: Live face recognition + liveness detection</p>
+        </div>
+
+        <!-- Step indicator for login -->
+        <div class="step-indicator">
+            <div class="step done">
+                <div class="step-circle">&#10003;</div>
+                <div class="step-label">Credentials</div>
+            </div>
+            <div style="align-self:center; color:#ccc; font-size:18px; margin-bottom:12px;">&#8594;</div>
+            <div class="step active">
+                <div class="step-circle">2</div>
+                <div class="step-label">Face Verify</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Instructions box -->
+        <div style="background:#f0f8ff; border:1px solid #bee3f8; padding:12px; border-radius:4px; margin-bottom:15px; font-size:13px;">
+            {% if mode == 'register' %}
+            <strong>Instructions:</strong>
+            <ul style="margin:5px 0 0 15px;">
+                <li>Allow camera access when prompted</li>
+                <li>Look directly at the camera</li>
+                <li>Make sure your face is well-lit</li>
+                <li>Click "Capture Face Photo"</li>
+            </ul>
+            {% else %}
+            <strong>Instructions:</strong>
+            <ul style="margin:5px 0 0 15px;">
+                <li>Allow camera access when prompted</li>
+                <li>Look directly at the camera</li>
+                <li><strong>&#128065; BLINK NATURALLY</strong> once &mdash; proves you are real, not a photo</li>
+                <li>Click &quot;Capture &amp; Verify&quot;</li>
+            </ul>
+            {% endif %}
+        </div>
+
+        <!-- Message box -->
+        <div id="messageBox" class="alert alert-info">Starting camera... Please wait.</div>
+
+        <!-- BLINK CHALLENGE BANNER (both login and register) -->
+        <div id="blinkBanner" style="
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            animation: blinkAnim 1s ease-in-out infinite alternate;
+            display: none;
+        ">
+            &#128065; BLINK NOW to prove you are real!
+        </div>
+        <style>
+            @keyframes blinkAnim {
+                from { opacity: 1; transform: scale(1); }
+                to   { opacity: 0.7; transform: scale(1.02); }
+            }
+        </style>
+
+        <!-- Camera video feed -->
+        <div class="face-capture-area">
+            <video id="cameraFeed" autoplay muted playsinline></video>
+            <canvas id="captureCanvas" style="display:none;"></canvas>
+        </div>
+
+        <!-- Buttons -->
+        <div style="text-align:center; margin-bottom:10px;">
+            <button class="btn btn-primary" id="captureBtn" onclick="capturePhoto()" disabled>
+                &#128247; Capture Photo
+            </button>
+        </div>
+
+        <!-- Preview of captured photo -->
+        <div id="previewSection" style="display:none; margin-bottom:10px; text-align:center;">
+            <p style="font-size:13px; color:#555; margin-bottom:5px;">Captured photo:</p>
+            <img id="capturedPreview" style="max-width:250px; border:2px solid #ddd; border-radius:4px;">
+            <br><br>
+            {% if mode == 'register' %}
+            <button class="btn btn-success" id="verifyBtn" onclick="saveFace()" disabled>
+                &#10003; Save Face &amp; Complete Registration
+            </button>
+            {% else %}
+            <button class="btn btn-success" id="verifyBtn" onclick="verifyFace()" disabled>
+                &#128270; Verify Face &amp; Login
+            </button>
+            {% endif %}
+            <button class="btn btn-outline-secondary ms-2" onclick="retakePhoto()">
+                Retake
+            </button>
+        </div>
+
+        <!-- Loading spinner -->
+        <div id="loadingSpinner" style="display:none; text-align:center; padding:10px;">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p style="font-size:13px; color:#666; margin-top:5px;">Processing... Please wait.</p>
+        </div>
+
+        <!-- Verification result -->
+        <div id="verificationResult" style="display:none;"></div>
+
+        <!-- Risk Score Bar (shown during login) -->
+        {% if mode == 'login' %}
+        <div id="riskBarContainer" style="display:none; margin-top:10px;">
+            <div style="font-size:13px; color:#555;" id="riskScoreText">Fraud Risk Score: 0/100</div>
+            <div class="risk-bar-container">
+                <div id="riskBar" class="risk-bar safe" style="width:0%;"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:15px; text-align:center; font-size:12px; color:#888;">
+            Having trouble? <a href="/login" style="color:#1a56db;">Go back to login</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% if mode == 'register' %}
+<!-- Face registration script with blink liveness -->
+<script>
+let videoStream    = null;
+let video          = null;
+let canvas         = null;
+let capturedImage  = null;
+let livenessFrames = [];
+let frameInterval  = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    video  = document.getElementById('cameraFeed');
+    canvas = document.getElementById('captureCanvas');
+    startCamera();
+});
+
+async function startCamera() {
+    try {
+        videoStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 400, height: 300, facingMode: 'user' }
+        });
+        video.srcObject = videoStream;
+        video.play();
+        showMessage('Camera ready! Please BLINK then click "Capture Photo".', 'info');
+        document.getElementById('captureBtn').disabled = false;
+        startFrameCollection();
+    } catch (err) {
+        showMessage('Camera Not Available. Please allow camera access and reload the page.', 'danger');
+    }
+}
+
+function startFrameCollection() {
+    livenessFrames = [];
+
+    // Show BLINK banner after 2 seconds
+    setTimeout(() => {
+        let banner = document.getElementById('blinkBanner');
+        if (banner) {
+            banner.style.display = 'block';
+            showMessage('&#128065; BLINK NOW to prove you are real, then click Capture Photo!', 'warning');
+        }
+    }, 2000);
+
+    // Capture frame every 100ms for blink detection
+    frameInterval = setInterval(() => {
+        if (video && video.readyState === 4) {
+            let tmp = document.createElement('canvas');
+            tmp.width = 320; tmp.height = 240;
+            tmp.getContext('2d').drawImage(video, 0, 0, 320, 240);
+            livenessFrames.push(tmp.toDataURL('image/jpeg', 0.5));
+            if (livenessFrames.length > 30) livenessFrames.shift();
+        }
+    }, 100);
+}
+
+function capturePhoto() {
+    canvas.width  = video.videoWidth  || 400;
+    canvas.height = video.videoHeight || 300;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    capturedImage = canvas.toDataURL('image/jpeg', 0.9);
+    document.getElementById('capturedPreview').src = capturedImage;
+    document.getElementById('previewSection').style.display = 'block';
+    document.getElementById('verifyBtn').disabled = false;
+    showMessage('Photo captured! Click "Save Face" to complete registration.', 'success');
+}
+
+function retakePhoto() {
+    capturedImage = null;
+    document.getElementById('previewSection').style.display = 'none';
+    document.getElementById('verifyBtn').disabled = true;
+    livenessFrames = [];
+    startFrameCollection();
+    showMessage('Please BLINK again then capture your photo.', 'info');
+}
+
+async function saveFace() {
+    if (!capturedImage) { alert('Please capture a photo first!'); return; }
+    if (frameInterval) clearInterval(frameInterval);
+
+    document.getElementById('verifyBtn').disabled = true;
+    document.getElementById('loadingSpinner').style.display = 'block';
+    showMessage('Checking liveness and saving your face...', 'info');
+
+    try {
+        let response = await fetch('/api/save-face', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image: capturedImage,
+                liveness_frames: livenessFrames   // send frames for blink check
+            })
+        });
+        let data = await response.json();
+        document.getElementById('loadingSpinner').style.display = 'none';
+
+        if (data.success) {
+            document.getElementById('verificationResult').style.display = 'block';
+            document.getElementById('verificationResult').innerHTML =
+                '<div class="alert alert-success"><strong>&#10003; ' + data.message + '</strong><br><small>Redirecting to login...</small></div>';
+            setTimeout(() => { window.location.href = data.redirect || '/login'; }, 2000);
+        } else {
+            showMessage('Error: ' + data.message, 'danger');
+            document.getElementById('verifyBtn').disabled = false;
+            livenessFrames = [];
+            startFrameCollection();  // restart frame collection for retry
+        }
+    } catch (err) {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        showMessage('Network error. Please try again.', 'danger');
+        document.getElementById('verifyBtn').disabled = false;
+    }
+}
+
+function showMessage(msg, type) {
+    let box = document.getElementById('messageBox');
+    box.className = 'alert alert-' + type;
+    box.innerHTML = msg;
+    box.style.display = 'block';
+}
+
+window.addEventListener('beforeunload', function() {
+    if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+    if (frameInterval) clearInterval(frameInterval);
+});
+</script>
+
+{% else %}
+<!-- Face verification script (login mode) -->
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endif %}
+
+</body>
+</html>
